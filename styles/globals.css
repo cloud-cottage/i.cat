@@ -1,0 +1,104 @@
+:root {
+  --bg: #ffffff;
+  --fg: #111;
+  --card: #f7f7f7;
+  --muted: #6b7280;
+  --link: #2563eb;
+  --radius: 12px;
+  --shadow: 0 6px 16px rgba(0,0,0,.08);
+}
+
+/* Theme 1-9: distinct Web3 geeky styles */
+.theme-1 {
+  --bg: #0b1020;
+  --fg: #e8eaff;
+  --card: #141a2b;
+  --muted: #b7c0ff;
+  --link: #7bdff6;
+}
+.theme-2 {
+  --bg: #0f0e1a;
+  --fg: #f9f7ff;
+  --card: #171327;
+  --muted: #d2b8ff;
+  --link: #7bdc8f;
+}
+.theme-3 {
+  --bg: #0b111a;
+  --fg: #f5f7ff;
+  --card: #141a28;
+  --muted: #a1b2ff;
+  --link: #f5a623;
+}
+.theme-4 {
+  --bg: #0a101a;
+  --fg: #e9f0ff;
+  --card: #111727;
+  --muted: #a6b8e8;
+  --link: #8be9fd;
+}
+.theme-5 {
+  --bg: #0f1a2b;
+  --fg: #eaf6ff;
+  --card: #142033;
+  --muted: #b5e1ff;
+  --link: #9bcbff;
+}
+.theme-6 {
+  --bg: #111b1f;
+  --fg: #e4fff7;
+  --card: #1a2720;
+  --muted: #9ff0d8;
+  --link: #7ad6ff;
+}
+.theme-7 {
+  --bg: #10131a;
+  --fg: #eafff4;
+  --card: #182022;
+  --muted: #a3ffd9;
+  --link: #ffd166;
+}
+.theme-8 {
+  --bg: #0b0e14;
+  --fg: #e6f0ff;
+  --card: #141e26;
+  --muted: #b3c7ff;
+  --link: #8bd3ff;
+}
+.theme-9 {
+  --bg: #0a0a0a;
+  --fg: #f0f0f0;
+  --card: #101010;
+  --muted: #d0d0d0;
+  --link: #7bdcff;
+}
+
+html, body, #__next {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Inter, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+}
+.container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1rem;
+}
+.link-list { display: grid; grid-template-columns: 1fr; gap: 0.75rem; }
+.link-item { display: flex; gap: 0.5rem; align-items: center; }
+.link-item input { flex: 1; padding: 0.5rem; border-radius: 6px; border: 1px solid #ddd; }
+.btn { padding: 0.5rem 0.75rem; border-radius: 6px; border: none; cursor: pointer; background: var(--link); color: white; }
+.btn.secondary { background: transparent; color: var(--fg); border: 1px solid #444; }
+.title { font-size: 1.5rem; margin-bottom: 0.5rem; }
+.muted { color: var(--muted); }
+.theme-switcher { display: inline-flex; gap: 6px; }
+.theme-option { width: 20px; height: 20px; border-radius: 3px; border: 1px solid #333; display: inline-block; cursor: pointer; }
