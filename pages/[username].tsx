@@ -31,7 +31,9 @@ const UserBlog: NextPage<Props> = ({ user: initialUser, links: initialLinks }) =
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ themeId: newThemeId })
       })
-    } catch {}
+    } catch (e) {
+      console.error('Theme change error:', e)
+    }
   }
 
   const handleSaveProfile = async () => {
@@ -42,27 +44,43 @@ const UserBlog: NextPage<Props> = ({ user: initialUser, links: initialLinks }) =
         body: JSON.stringify({ twitterHandle, bio })
       })
       setIsEditingProfile(false)
-    } catch {}
+    } catch (e) {
+      console.error('Profile save error:', e)
+      alert('保存失败')
+    }
   }
 
   const handleAddLink = async () => {
-    if (!newLink.label || !newLink.url) return
+    console.log('Adding link:', newLink)
+    if (!newLink.label || !newLink.url) {
+      alert('请填写链接名称和地址')
+      return
+    }
     if (links.length >= 9) {
       alert('最多只能添加 9 条链接')
       return
     }
     try {
+      console.log('Fetching:', `/api/users/${initialUser.username}/links`)
       const res = await fetch(`/api/users/${initialUser.username}/links`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newLink)
       })
+      console.log('Response status:', res.status)
       const data = await res.json()
+      console.log('Response data:', data)
       if (data.link) {
         setLinks([...links, { id: data.link.id, label: data.link.label, url: data.link.url }])
         setNewLink({ label: '', url: '' })
+        alert('链接添加成功')
+      } else {
+        alert('添加失败: ' + (data.error || '未知错误'))
       }
-    } catch {}
+    } catch (e) {
+      console.error('Add link error:', e)
+      alert('网络错误，请检查控制台')
+    }
   }
 
   const handleDeleteLink = async (linkId: string) => {
@@ -71,7 +89,9 @@ const UserBlog: NextPage<Props> = ({ user: initialUser, links: initialLinks }) =
         method: 'DELETE'
       })
       setLinks(links.filter(l => l.id !== linkId))
-    } catch {}
+    } catch (e) {
+      console.error('Delete error:', e)
+    }
   }
 
   const handleMoveLink = async (index: number, direction: 'up' | 'down') => {
@@ -84,7 +104,6 @@ const UserBlog: NextPage<Props> = ({ user: initialUser, links: initialLinks }) =
     
     setLinks(newLinks)
     
-    // Update order on server
     try {
       await Promise.all(newLinks.map((link, i) => 
         fetch(`/api/users/${initialUser.username}/links/${link.id}`, {
@@ -93,7 +112,9 @@ const UserBlog: NextPage<Props> = ({ user: initialUser, links: initialLinks }) =
           body: JSON.stringify({ order: i })
         })
       ))
-    } catch {}
+    } catch (e) {
+      console.error('Move error:', e)
+    }
   }
 
   return (
@@ -209,7 +230,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const { username } = context.params as { username: string }
   let user = db.getUserByUsername(username)
   if (!user) {
-    // Create user in database so API calls will work
     const genId = () => 'id_' + Math.random().toString(36).slice(2, 9) + Date.now().toString(36)
     user = db.createUser({
       id: genId(),
