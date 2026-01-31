@@ -209,8 +209,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const { username } = context.params as { username: string }
   let user = db.getUserByUsername(username)
   if (!user) {
-    user = {
-      id: 'temp-id',
+    // Create user in database so API calls will work
+    const genId = () => 'id_' + Math.random().toString(36).slice(2, 9) + Date.now().toString(36)
+    user = db.createUser({
+      id: genId(),
       walletAddress: '0x0',
       username,
       twitterHandle: '',
@@ -219,7 +221,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       bio: '',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
-    }
+    })
   }
   const currentLinks = db.getLinks(user.id) ?? []
   const links = currentLinks.map((l: any) => ({ id: l.id, label: l.label, url: l.url }))
