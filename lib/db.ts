@@ -15,6 +15,7 @@ type Link = {
   userId: string
   label: string
   url: string
+  description?: string
   order: number
   createdAt: string
   updatedAt: string

@@ -16,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const list = db.getLinks(user.id)
     return res.status(200).json({ links: list })
   } else if (req.method === 'POST') {
-    const { label, url } = req.body ?? {}
+    const { label, url, description } = req.body ?? {}
     const current = db.getLinks(user.id)
     if (current.length >= 9) {
       return res.status(400).json({ error: 'maximum 9 links' })
@@ -26,6 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       userId: user.id,
       label: label ?? '',
       url: url ?? '',
+      description: description ?? '',
       order: current.length,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()

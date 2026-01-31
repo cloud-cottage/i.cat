@@ -2,7 +2,7 @@ import type { GetServerSideProps, NextPage } from 'next'
 import React, { useEffect, useState } from 'react'
 import { db } from '../lib/db'
 
-type LinkItem = { id?: string; label: string; url: string }
+type LinkItem = { id?: string; label: string; url: string; description?: string }
 
 type Props = {
   user: any
@@ -16,7 +16,7 @@ const UserBlog: NextPage<Props> = ({ user: initialUser, links: initialLinks }) =
   const [twitterHandle, setTwitterHandle] = useState(initialUser?.twitterHandle ?? '')
   const [bio, setBio] = useState(initialUser?.bio ?? '')
   const [links, setLinks] = useState<LinkItem[]>(initialLinks)
-  const [newLink, setNewLink] = useState({ label: '', url: '' })
+  const [newLink, setNewLink] = useState({ label: '', url: '', description: '' })
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
 
@@ -69,8 +69,8 @@ const UserBlog: NextPage<Props> = ({ user: initialUser, links: initialLinks }) =
       })
       const data = await res.json()
       if (data.link) {
-        setLinks([...links, { id: data.link.id, label: data.link.label, url: data.link.url }])
-        setNewLink({ label: '', url: '' })
+        setLinks([...links, { id: data.link.id, label: data.link.label, url: data.link.url, description: data.link.description }])
+        setNewLink({ label: '', url: '', description: '' })
       } else {
         alert('添加失败: ' + (data.error || '未知错误'))
       }
@@ -199,6 +199,13 @@ const UserBlog: NextPage<Props> = ({ user: initialUser, links: initialLinks }) =
                   placeholder="https://..."
                   style={{ flex: 2 }}
                 />
+                <input 
+                  type="text" 
+                  value={newLink.description}
+                  onChange={e => setNewLink({...newLink, description: e.target.value})}
+                  placeholder="说明文字"
+                  style={{ flex: 1.5 }}
+                />
                 <button onClick={handleAddLink} disabled={links.length >= 9}>添加</button>
               </div>
               <div style={{ fontSize: '0.85rem', color: 'var(--muted)' }}>
@@ -240,7 +247,10 @@ const UserBlog: NextPage<Props> = ({ user: initialUser, links: initialLinks }) =
                 }}
               >
                 <span style={{ minWidth: '24px', fontWeight: 'bold' }}>{index + 1}.</span>
-                <span style={{ flex: 1 }}>{link.label}</span>
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                  <span>{link.label}</span>
+                  {link.description && <span style={{ color: 'var(--muted)', fontSize: '0.85rem' }}>{link.description}</span>}
+                </div>
                 <span style={{ flex: 2, color: 'var(--muted)', fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis' }}>{link.url}</span>
                 <div style={{ display: 'flex', gap: '0.25rem' }}>
                   <button onClick={() => handleDeleteLink(link.id!)} style={{ padding: '0.25rem 0.5rem', color: '#ff4444' }}>删除</button>
@@ -254,10 +264,11 @@ const UserBlog: NextPage<Props> = ({ user: initialUser, links: initialLinks }) =
               <p className="muted">暂无外部链接，点击"编辑外部链接"添加</p>
             ) : (
               links.map((link, index) => (
-                <div key={link.id} style={{ marginBottom: '0.5rem' }}>
+                <div key={link.id} style={{ marginBottom: '0.75rem' }}>
                   <a href={link.url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--link)' }}>
                     {index + 1}. {link.label}
                   </a>
+                  {link.description && <div style={{ color: 'var(--muted)', fontSize: '0.85rem', marginTop: '0.25rem' }}>{link.description}</div>}
                 </div>
               ))
             )}
@@ -291,7 +302,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     })
   }
   const currentLinks = db.getLinks(user.id) ?? []
-  const links = currentLinks.map((l: any) => ({ id: l.id, label: l.label, url: l.url }))
+  const links = currentLinks.map((l: any) => ({ id: l.id, label: l.label, url: l.url, description: l.description }))
   return {
     props: {
       user,
