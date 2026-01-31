@@ -1,5 +1,5 @@
 import type { GetServerSideProps, NextPage } from 'next'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { db } from '../lib/db'
 
 type LinkItem = { label: string; url: string }
@@ -10,42 +10,71 @@ type Props = {
 }
 
 const UserBlog: NextPage<Props> = ({ user, links }) => {
+  const [themeId, setThemeId] = useState(user?.themeId ?? 1)
+  const [isEditing, setIsEditing] = useState(false)
+  const [twitterHandle, setTwitterHandle] = useState(user?.twitterHandle ?? '')
+  const [bio, setBio] = useState(user?.bio ?? '')
+
   useEffect(() => {
     // hydrate web components data
     const el = document.querySelector('lc-link-list') as any
     if (el) {
       el.data = links
     }
-    // setup theme switcher
-    const tsh = document.querySelector('tw-theme-switcher') as any
-    if (tsh) {
-      const themes = Array.from({ length: 9 }).map((_, i) => ({ id: i + 1, name: `Theme ${i+1}`, className: `theme-${i+1}` }))
-      tsh.themes = themes
-      tsh.addEventListener('themechange', (e: any) => {
-        const id = e?.detail?.themeId
-        if (id) {
-          document.body.classList.remove(...Array.from({length:9}, (_,i)=>`theme-${i+1}`))
-          document.body.classList.add(`theme-${id}`)
-        }
-      })
-    }
     // set default theme
-    document.body.classList.add('theme-1')
-  }, [links])
+    document.body.classList.remove(...Array.from({length:9}, (_,i)=>`theme-${i+1}`))
+    document.body.classList.add(`theme-${themeId}`)
+  }, [links, themeId])
+
+  const handleThemeChange = async (newThemeId: number) => {
+    setThemeId(newThemeId)
+    try {
+      await fetch(`/api/users/${user.username}/profile`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ themeId: newThemeId })
+      })
+    } catch {}
+  }
+
+  const handleSaveProfile = async () => {
+    try {
+      await fetch(`/api/users/${user.username}/profile`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ twitterHandle, bio })
+      })
+      setIsEditing(false)
+    } catch {}
+  }
   return (
     <div className={`container`}> 
       <div className={`card`}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2>{user?.username ?? 'User'}</h2>
-          <div>SIWE 登录占位</div>
+          <div>
+            <h2>{user?.username ?? 'User'}</h2>
+            <p className="muted">Twitter: @{user?.twitterHandle || '未设置'}</p>
+          </div>
+          <select value={themeId} onChange={e => handleThemeChange(Number(e.target.value))} style={{ padding: '0.25rem 0.5rem' }}>
+            {Array.from({ length: 9 }).map((_, i) => (
+              <option key={i + 1} value={i + 1}>主题 {i + 1}</option>
+            ))}
+          </select>
         </div>
-        <p className="muted">Twitter: @{user?.twitterHandle ?? '未设置'}</p>
-      </div>
-
-      <div className="card" style={{ marginTop: '0.5rem' }}>
-        {/* Theme switcher component */}
-        { /* @ts-ignore */ }
-        {React.createElement('tw-theme-switcher', null, null)}
+        <div style={{ marginTop: '1rem' }}>
+          {isEditing ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <input type="text" value={twitterHandle} onChange={e => setTwitterHandle(e.target.value)} placeholder="Twitter handle" />
+              <textarea value={bio} onChange={e => setBio(e.target.value)} placeholder="个人简介" rows={2} />
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button onClick={handleSaveProfile}>保存</button>
+                <button onClick={() => setIsEditing(false)}>取消</button>
+              </div>
+            </div>
+          ) : (
+            <button onClick={() => setIsEditing(true)}>编辑资料</button>
+          )}
+        </div>
       </div>
 
       <div className="card" style={{ marginTop: '1rem' }}>
