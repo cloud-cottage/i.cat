@@ -36,7 +36,15 @@ const Home: NextPage = () => {
       const data = await res.json()
       console.log('Login response:', data)
       if (data.ok) {
-        router.push('/setup')
+        // Delay to avoid race with script errors on current page
+        setTimeout(() => {
+          try {
+            router.push('/setup')
+          } catch (e) {
+            console.error('Router push error:', e)
+            window.location.href = '/setup'
+          }
+        }, 300)
       } else {
         alert('登录失败')
       }
