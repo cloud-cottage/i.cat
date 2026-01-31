@@ -1,0 +1,61 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+  max-width: 480px;
+  width: 100%;
+}
+.title {
+  font-size: 1.75rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.field label {
+  font-weight: 600;
+  color: var(--fg);
+}
+.input, .textarea, .select {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 1rem;
+  font-family: inherit;
+}
+.btnPrimary {
+  padding: 0.875rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  background: var(--link);
+  color: white;
+  transition: opacity 0.2s;
+}
+.btnPrimary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btnPrimary:hover:not(:disabled) {
+  opacity: 0.8;
+}

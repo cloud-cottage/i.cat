@@ -23,7 +23,8 @@
     "next-env.d.ts",
     "src/**/*",
     "pages/**/*",
-    "typings/**/*"
+    "typings/**/*",
+    "types/**/*"
   ],
   "exclude": [
     "node_modules"

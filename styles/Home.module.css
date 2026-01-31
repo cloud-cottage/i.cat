@@ -1,0 +1,61 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 3rem 2.5rem;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+}
+.title {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+.subtitle {
+  color: var(--muted);
+  margin-bottom: 2rem;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.input {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 1rem;
+}
+.btnPrimary, .btnSecondary {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+.btnPrimary {
+  background: var(--link);
+  color: white;
+}
+.btnPrimary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btnSecondary {
+  background: transparent;
+  color: var(--fg);
+  border: 1px solid #444;
+}
+.btnPrimary:hover:not(:disabled), .btnSecondary:hover {
+  opacity: 0.8;
+}
