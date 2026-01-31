@@ -12,17 +12,20 @@ const Home: NextPage = () => {
     try {
       let address: string | undefined
       if (typeof window.okxwallet !== 'undefined') {
+        console.log('Using OKX Wallet')
         const accounts = await window.okxwallet.request({ method: 'eth_requestAccounts' })
         address = accounts[0]
       } else if (typeof window.ethereum !== 'undefined') {
+        console.log('Fallback to ethereum provider')
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
         address = accounts[0]
       } else {
         alert('请安装 OKX Wallet 或其他支持的钱包')
         return
       }
+      console.log('Got address:', address)
       if (!address) {
-        alert('钱包连接失败')
+        alert('钱包未返回地址')
         return
       }
       const res = await fetch('/api/auth/siwe/login', {
@@ -31,12 +34,14 @@ const Home: NextPage = () => {
         body: JSON.stringify({ walletAddress: address })
       })
       const data = await res.json()
+      console.log('Login response:', data)
       if (data.ok) {
         router.push('/setup')
       } else {
         alert('登录失败')
       }
     } catch (e) {
+      console.error('Connect error:', e)
       alert('钱包连接或登录失败')
     } finally {
       setIsLoading(false)
