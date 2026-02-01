@@ -62,10 +62,10 @@ const UserBlog: NextPage<Props> = ({ user: initialUser, links: initialLinks }) =
       return
     }
     
-    // Auto-add http:// prefix if missing
-    let processedUrl = newLink.url.trim()
-    if (!/^https?:\/\//i.test(processedUrl)) {
-      processedUrl = 'http://' + processedUrl
+    // Auto-add https:// prefix if missing, normalize to lowercase
+    let processedUrl = newLink.url.trim().toLowerCase()
+    if (!/^https?:\/\//.test(processedUrl)) {
+      processedUrl = 'https://' + processedUrl
     }
     
     const linkData = {
