@@ -93,7 +93,10 @@ const UserBlog: NextPage<Props> = ({ user: initialUser, links: initialLinks }) =
 
   const handleDragStart = (e: React.DragEvent, index: number) => {
     setDraggedIndex(index)
+    setDragOverIndex(index)
     e.dataTransfer.effectAllowed = 'move'
+    // Set ghost image or data
+    e.dataTransfer.setData('text/plain', String(index))
   }
 
   const handleDragOver = (e: React.DragEvent, index: number) => {
@@ -221,29 +224,19 @@ const UserBlog: NextPage<Props> = ({ user: initialUser, links: initialLinks }) =
             
             {links.map((link, index) => (
               <div 
-                key={link.id} 
-                draggable
-                onDragStart={(e) => handleDragStart(e, index)}
-                onDragOver={(e) => handleDragOver(e, index)}
-                onDragLeave={handleDragLeave}
-                onDrop={(e) => handleDrop(e, index)}
-                onDragEnd={handleDragEnd}
+                key={link.id}
                 style={{ 
                   display: 'flex', 
                   alignItems: 'flex-start', 
                   gap: '0.5rem', 
                   padding: '0.75rem',
                   marginBottom: '0.5rem',
-                  background: draggedIndex === index 
-                    ? 'rgba(255,255,255,0.1)' 
-                    : dragOverIndex === index 
-                      ? 'rgba(37, 99, 235, 0.2)' 
-                      : 'rgba(255,255,255,0.03)',
+                  background: dragOverIndex === index 
+                    ? 'rgba(37, 99, 235, 0.1)' 
+                    : 'rgba(255,255,255,0.03)',
                   borderRadius: '6px',
-                  cursor: 'move',
                   border: dragOverIndex === index ? '2px dashed var(--link)' : '2px solid transparent',
-                  transition: 'all 0.2s',
-                  opacity: draggedIndex === index ? 0.5 : 1
+                  transition: 'all 0.2s'
                 }}
               >
                 <span style={{ minWidth: '24px', fontWeight: 'bold', marginTop: '0.25rem' }}>{index + 1}.</span>
@@ -251,7 +244,32 @@ const UserBlog: NextPage<Props> = ({ user: initialUser, links: initialLinks }) =
                   <a href={link.url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--link)', fontWeight: 500, textDecoration: 'none' }}>
                     {link.label}
                   </a>
-                  {link.description && <span style={{ color: 'var(--muted)', fontSize: '0.85rem' }}>{link.description}</span>}
+                  {link.description && (
+                    <div 
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, index)}
+                      onDragOver={(e) => handleDragOver(e, index)}
+                      onDragLeave={handleDragLeave}
+                      onDrop={(e) => handleDrop(e, index)}
+                      onDragEnd={handleDragEnd}
+                      style={{ 
+                        color: 'var(--muted)', 
+                        fontSize: '0.85rem',
+                        cursor: 'move',
+                        padding: '0.25rem 0.5rem',
+                        background: draggedIndex === index ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.05)',
+                        borderRadius: '4px',
+                        borderLeft: '3px solid var(--link)',
+                        opacity: draggedIndex === index ? 0.6 : 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem'
+                      }}
+                    >
+                      <span>⋮⋮</span>
+                      <span>{link.description}</span>
+                    </div>
+                  )}
                   <span style={{ color: 'var(--muted)', fontSize: '0.75rem', opacity: 0.7 }}>{link.url}</span>
                 </div>
                 <div style={{ display: 'flex', gap: '0.25rem' }}>
