@@ -102,3 +102,21 @@ body {
 .muted { color: var(--muted); }
 .theme-switcher { display: inline-flex; gap: 6px; }
 .theme-option { width: 20px; height: 20px; border-radius: 3px; border: 1px solid #333; display: inline-block; cursor: pointer; }
+
+/* Shake animation for invalid input */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.input-shake {
+  animation: shake 0.5s ease-in-out;
+  border-color: #ff4444 !important;
+  box-shadow: 0 0 0 2px rgba(255, 68, 68, 0.3) !important;
+}
+
+.input-error {
+  border-color: #ff4444 !important;
+  box-shadow: 0 0 0 2px rgba(255, 68, 68, 0.3) !important;
+}

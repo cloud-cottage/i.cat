@@ -19,6 +19,7 @@ const UserBlog: NextPage<Props> = ({ user: initialUser, links: initialLinks }) =
   const [newLink, setNewLink] = useState({ label: '', url: '', description: '' })
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null)
+  const [urlError, setUrlError] = useState(false)
 
   useEffect(() => {
     document.body.classList.remove(...Array.from({length:9}, (_,i)=>`theme-${i+1}`))
@@ -64,55 +65,72 @@ const UserBlog: NextPage<Props> = ({ user: initialUser, links: initialLinks }) =
     
     // URL validation and normalization
     let processedUrl = newLink.url.trim()
+    let isValid = true
+    let errorMessage = ''
     
     // 1. Basic format check - reject obviously invalid input
     if (!processedUrl || processedUrl.length < 3) {
-      alert('请输入有效的 URL')
-      return
+      isValid = false
+      errorMessage = 'URL 太短'
     }
     
     // 2. Auto-add https:// if protocol is missing
-    if (!/^https?:\/\//i.test(processedUrl)) {
+    if (isValid && !/^https?:\/\//i.test(processedUrl)) {
       processedUrl = 'https://' + processedUrl
     }
     
     // 3. Use URL API to validate and normalize
-    try {
-      const urlObj = new URL(processedUrl)
-      
-      // 4. Check if hostname exists and is valid
-      const hostname = urlObj.hostname.toLowerCase()
-      
-      // Reject if no hostname (e.g., just "https://")
-      if (!hostname) {
-        alert('请输入有效的域名或 IP 地址')
-        return
+    if (isValid) {
+      try {
+        const urlObj = new URL(processedUrl)
+        
+        // 4. Check if hostname exists and is valid
+        const hostname = urlObj.hostname.toLowerCase()
+        
+        // Reject if no hostname (e.g., just "https://")
+        if (!hostname) {
+          isValid = false
+          errorMessage = '缺少域名'
+        }
+        
+        // 5. Validate hostname format
+        // Allow: domain.tld, sub.domain.tld, localhost, IP addresses, Web3 domains
+        if (isValid) {
+          const isValidHostname = /^(localhost|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z0-9]([a-z0-9-]*[a-z0-9])?|[a-z0-9-]+)$/i.test(hostname)
+          
+          if (!isValidHostname) {
+            isValid = false
+            errorMessage = '域名格式无效'
+          }
+        }
+        
+        // 6. Check for common TLDs or Web3 domains (warning only, not blocking)
+        if (isValid) {
+          const commonTlds = /\.(com|net|org|edu|gov|mil|int|cn|uk|jp|de|fr|app|dev|io|co|eth|crypto|nft|dao|xyz|blog|site|online|store|cloud|ai|tech|info|biz|name|pro|aero|museum|arpa)$/i
+          const hasTld = commonTlds.test(hostname) || hostname.includes('.')
+          
+          if (!hasTld && hostname !== 'localhost' && !/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname)) {
+            console.warn('URL might be missing a domain extension:', hostname)
+          }
+        }
+        
+        // 7. Reconstruct clean URL (lowercase hostname, keep path/query)
+        if (isValid) {
+          urlObj.hostname = hostname
+          processedUrl = urlObj.toString()
+        }
+        
+      } catch (e) {
+        isValid = false
+        errorMessage = 'URL 格式无效'
       }
-      
-      // 5. Validate hostname format
-      // Allow: domain.tld, sub.domain.tld, localhost, IP addresses, Web3 domains
-      const isValidHostname = /^(localhost|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z0-9]([a-z0-9-]*[a-z0-9])?|[a-z0-9-]+)$/i.test(hostname)
-      
-      if (!isValidHostname) {
-        alert('请输入有效的域名格式')
-        return
-      }
-      
-      // 6. Check for common TLDs or Web3 domains (warning only, not blocking)
-      const commonTlds = /\.(com|net|org|edu|gov|mil|int|cn|uk|jp|de|fr|app|dev|io|co|eth|crypto|nft|dao|xyz|blog|site|online|store|cloud|ai|tech|info|biz|name|pro|aero|museum|arpa)$/i
-      const hasTld = commonTlds.test(hostname) || hostname.includes('.')
-      
-      if (!hasTld && hostname !== 'localhost' && !/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname)) {
-        // Warn but allow - might be a custom/internal domain
-        console.warn('URL might be missing a domain extension:', hostname)
-      }
-      
-      // 7. Reconstruct clean URL (lowercase hostname, keep path/query)
-      urlObj.hostname = hostname
-      processedUrl = urlObj.toString()
-      
-    } catch (e) {
-      alert('URL 格式无效，请检查输入')
+    }
+    
+    // Trigger shake animation if invalid
+    if (!isValid) {
+      setUrlError(true)
+      // Remove error state after animation completes
+      setTimeout(() => setUrlError(false), 500)
       return
     }
     
@@ -258,9 +276,20 @@ const UserBlog: NextPage<Props> = ({ user: initialUser, links: initialLinks }) =
                 <input 
                   type="text" 
                   value={newLink.url}
-                  onChange={e => setNewLink({...newLink, url: e.target.value})}
+                  onChange={e => {
+                    setNewLink({...newLink, url: e.target.value})
+                    if (urlError) setUrlError(false)
+                  }}
                   placeholder="https://..."
-                  style={{ flex: 2 }}
+                  className={urlError ? 'input-shake' : ''}
+                  style={{ 
+                    flex: 2,
+                    padding: '0.5rem',
+                    borderRadius: '6px',
+                    border: '1px solid #444',
+                    background: 'var(--bg)',
+                    color: 'var(--fg)'
+                  }}
                 />
                 <input 
                   type="text" 
