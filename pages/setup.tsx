@@ -46,7 +46,7 @@ const Setup: NextPage = () => {
   return (
     <main className={styles.container}>
       <div className={styles.card}>
-        <h1 className={styles.title}>设置你的博客</h1>
+        <h1 className={styles.title}>欢迎来到猫猫之家</h1>
         <form className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.field}>
             <label>用户名（将作为你的博客地址）</label>

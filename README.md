@@ -1,6 +1,6 @@
-# i.cat
+# 猫猫之家 (i.cat)
 
-Web3 极客风博客 MVP —— 通过 Web3 钱包登录，设置用户名，生成个人博客页面 `i.catcat.meme/username`，支持 0–9 条外部链接的拖拽排序、9 套主题切换以及最近推文展示。
+一个 Web3 个人主页平台 —— 通过钱包登录，创建你的专属页面 `i.catcat.meme/username`，支持外部链接展示、主题切换和社交媒体集成。
 
 ## 技术栈
 
@@ -39,10 +39,10 @@ npm run dev
 
 ## 后续路线
 
-- 完整 SIWE 登录与真实数据库迁移
-- Twitter API v2 集成与推文缓存
-- Vercel 部署与域名 i.catcat.meme
-- 9 套主题视觉细化与可选女性友好风格
+- 完整 Web3 登录与真实数据库迁移
+- Twitter/X 集成与推文展示
+- Vercel 部署与域名配置
+- 更多主题风格与个性化选项
 
 ## License
 

@@ -1,5 +1,6 @@
 import type { AppProps } from 'next/app'
 import { useEffect } from 'react'
+import Head from 'next/head'
 import '../styles/globals.css'
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -16,7 +17,15 @@ function MyApp({ Component, pageProps }: AppProps) {
       .catch(() => {})
   }, [])
 
-  return <Component {...pageProps} />
+  return (
+    <>
+      <Head>
+        <title>猫猫之家</title>
+        <meta name="description" content="Web3 个人主页平台" />
+      </Head>
+      <Component {...pageProps} />
+    </>
+  )
 }
 
 export default MyApp

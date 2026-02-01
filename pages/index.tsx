@@ -59,8 +59,8 @@ const Home: NextPage = () => {
   return (
     <main className={styles.container}>
       <div className={styles.card}>
-        <h1 className={styles.title}>欢迎来到 i.catcat.meme</h1>
-        <p className={styles.subtitle}>用你的 Web3 钱包登录，开启个人博客</p>
+        <h1 className={styles.title}>猫猫之家</h1>
+        <p className={styles.subtitle}>用 Web3 钱包登录，创建你的个人主页</p>
         
         <div className={styles.form}>
           <button onClick={handleConnect} disabled={isLoading} className={styles.btnPrimary}>
