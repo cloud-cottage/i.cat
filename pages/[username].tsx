@@ -61,11 +61,23 @@ const UserBlog: NextPage<Props> = ({ user: initialUser, links: initialLinks }) =
       alert('最多只能添加 9 条链接')
       return
     }
+    
+    // Auto-add http:// prefix if missing
+    let processedUrl = newLink.url.trim()
+    if (!/^https?:\/\//i.test(processedUrl)) {
+      processedUrl = 'http://' + processedUrl
+    }
+    
+    const linkData = {
+      ...newLink,
+      url: processedUrl
+    }
+    
     try {
       const res = await fetch(`/api/users/${initialUser.username}/links`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newLink)
+        body: JSON.stringify(linkData)
       })
       const data = await res.json()
       if (data.link) {
