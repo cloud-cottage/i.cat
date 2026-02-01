@@ -54,10 +54,20 @@ const UserBlog: NextPage<Props> = ({ user: initialUser, links: initialLinks }) =
   }
 
   const handleAddLink = async () => {
-    if (!newLink.label || !newLink.url) {
-      alert('请填写链接名称和地址')
+    // 1. Validate label length (at least 2 characters)
+    const labelTrimmed = newLink.label.trim()
+    if (!labelTrimmed || labelTrimmed.length < 2) {
+      setUrlError(true)
+      setTimeout(() => setUrlError(false), 500)
+      alert('链接标题至少需要 2 个汉字或字符')
       return
     }
+    
+    if (!newLink.url) {
+      alert('请填写链接地址')
+      return
+    }
+    
     if (links.length >= 9) {
       alert('最多只能添加 9 条链接')
       return
