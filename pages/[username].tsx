@@ -230,9 +230,9 @@ const UserBlog: NextPage<Props> = ({ user: initialUser, links: initialLinks }) =
                 onDragEnd={handleDragEnd}
                 style={{ 
                   display: 'flex', 
-                  alignItems: 'center', 
+                  alignItems: 'flex-start', 
                   gap: '0.5rem', 
-                  padding: '0.5rem',
+                  padding: '0.75rem',
                   marginBottom: '0.5rem',
                   background: draggedIndex === index 
                     ? 'rgba(255,255,255,0.1)' 
@@ -246,12 +246,14 @@ const UserBlog: NextPage<Props> = ({ user: initialUser, links: initialLinks }) =
                   opacity: draggedIndex === index ? 0.5 : 1
                 }}
               >
-                <span style={{ minWidth: '24px', fontWeight: 'bold' }}>{index + 1}.</span>
+                <span style={{ minWidth: '24px', fontWeight: 'bold', marginTop: '0.25rem' }}>{index + 1}.</span>
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                  <span>{link.label}</span>
+                  <a href={link.url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--link)', fontWeight: 500, textDecoration: 'none' }}>
+                    {link.label}
+                  </a>
                   {link.description && <span style={{ color: 'var(--muted)', fontSize: '0.85rem' }}>{link.description}</span>}
+                  <span style={{ color: 'var(--muted)', fontSize: '0.75rem', opacity: 0.7 }}>{link.url}</span>
                 </div>
-                <span style={{ flex: 2, color: 'var(--muted)', fontSize: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis' }}>{link.url}</span>
                 <div style={{ display: 'flex', gap: '0.25rem' }}>
                   <button onClick={() => handleDeleteLink(link.id!)} style={{ padding: '0.25rem 0.5rem', color: '#ff4444' }}>删除</button>
                 </div>
@@ -264,11 +266,14 @@ const UserBlog: NextPage<Props> = ({ user: initialUser, links: initialLinks }) =
               <p className="muted">暂无外部链接，点击"编辑外部链接"添加</p>
             ) : (
               links.map((link, index) => (
-                <div key={link.id} style={{ marginBottom: '0.75rem' }}>
-                  <a href={link.url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--link)' }}>
-                    {index + 1}. {link.label}
-                  </a>
-                  {link.description && <div style={{ color: 'var(--muted)', fontSize: '0.85rem', marginTop: '0.25rem' }}>{link.description}</div>}
+                <div key={link.id} style={{ marginBottom: '1rem', padding: '0.5rem 0' }}>
+                  <div>
+                    <span style={{ color: 'var(--muted)', marginRight: '0.5rem' }}>{index + 1}.</span>
+                    <a href={link.url} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--link)', fontWeight: 500, textDecoration: 'none' }}>
+                      {link.label}
+                    </a>
+                  </div>
+                  {link.description && <div style={{ color: 'var(--muted)', fontSize: '0.9rem', marginTop: '0.5rem', marginLeft: '1.5rem' }}>{link.description}</div>}
                 </div>
               ))
             )}
