@@ -62,10 +62,58 @@ const UserBlog: NextPage<Props> = ({ user: initialUser, links: initialLinks }) =
       return
     }
     
-    // Auto-add https:// prefix if missing, normalize to lowercase
-    let processedUrl = newLink.url.trim().toLowerCase()
-    if (!/^https?:\/\//.test(processedUrl)) {
+    // URL validation and normalization
+    let processedUrl = newLink.url.trim()
+    
+    // 1. Basic format check - reject obviously invalid input
+    if (!processedUrl || processedUrl.length < 3) {
+      alert('请输入有效的 URL')
+      return
+    }
+    
+    // 2. Auto-add https:// if protocol is missing
+    if (!/^https?:\/\//i.test(processedUrl)) {
       processedUrl = 'https://' + processedUrl
+    }
+    
+    // 3. Use URL API to validate and normalize
+    try {
+      const urlObj = new URL(processedUrl)
+      
+      // 4. Check if hostname exists and is valid
+      const hostname = urlObj.hostname.toLowerCase()
+      
+      // Reject if no hostname (e.g., just "https://")
+      if (!hostname) {
+        alert('请输入有效的域名或 IP 地址')
+        return
+      }
+      
+      // 5. Validate hostname format
+      // Allow: domain.tld, sub.domain.tld, localhost, IP addresses, Web3 domains
+      const isValidHostname = /^(localhost|\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z0-9]([a-z0-9-]*[a-z0-9])?|[a-z0-9-]+)$/i.test(hostname)
+      
+      if (!isValidHostname) {
+        alert('请输入有效的域名格式')
+        return
+      }
+      
+      // 6. Check for common TLDs or Web3 domains (warning only, not blocking)
+      const commonTlds = /\.(com|net|org|edu|gov|mil|int|cn|uk|jp|de|fr|app|dev|io|co|eth|crypto|nft|dao|xyz|blog|site|online|store|cloud|ai|tech|info|biz|name|pro|aero|museum|arpa)$/i
+      const hasTld = commonTlds.test(hostname) || hostname.includes('.')
+      
+      if (!hasTld && hostname !== 'localhost' && !/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname)) {
+        // Warn but allow - might be a custom/internal domain
+        console.warn('URL might be missing a domain extension:', hostname)
+      }
+      
+      // 7. Reconstruct clean URL (lowercase hostname, keep path/query)
+      urlObj.hostname = hostname
+      processedUrl = urlObj.toString()
+      
+    } catch (e) {
+      alert('URL 格式无效，请检查输入')
+      return
     }
     
     const linkData = {
