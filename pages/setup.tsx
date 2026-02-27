@@ -36,7 +36,7 @@ const Setup: NextPage = () => {
         body: JSON.stringify({})
       })
       if (res.ok) {
-        router.push(`/${username}`)
+        window.location.href = `https://${username}.catcat.meme`
       } else {
         alert('保存失败')
       }
