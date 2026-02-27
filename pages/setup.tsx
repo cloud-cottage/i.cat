@@ -24,6 +24,10 @@ const Setup: NextPage = () => {
       alert('请设置用户名')
       return
     }
+    if (/^\d/.test(username)) {
+      alert('用户名不能以数字开头')
+      return
+    }
     setIsLoading(true)
     try {
       const res = await fetch(`/api/users/${username}/profile`, {

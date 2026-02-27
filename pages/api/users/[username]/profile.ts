@@ -12,6 +12,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (!username || typeof username !== 'string') {
     return res.status(400).json({ error: 'invalid username' })
   }
+  if (/^\d/.test(username)) {
+    return res.status(400).json({ error: 'username cannot start with number' })
+  }
   // find user or create placeholder
   let user = db.getUserByUsername(username)
   if (!user) {
